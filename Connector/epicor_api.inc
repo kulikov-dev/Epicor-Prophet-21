@@ -124,6 +124,38 @@ class epicor_api
         return self::get_entity_by_email($email, 'contacts');
     }
 
+    /** Upload information about customer to Epicor
+     * @param array $cms_customer Customer info in CMS format
+     * @return array Information about Epicor customer identifiers (address_id, cms_customer_id, contact_id, customer_id)
+     */
+    public static function set_customer($cms_customer)
+    {
+        self::check_connection();
+
+        $result = [];
+        $epicor_contact = epicor_data_converter::convert_customer_to_epicor_contact($cms_customer);
+        $epicor_address = epicor_data_converter::convert_customer_to_epicor_address($cms_customer);
+
+        $search_url = 'api/entity/addresses/';
+        $epicor_address = self::$connector->upload_record($search_url, $epicor_address);
+
+        $result['EPICOR_ADDRESS_ID'] = $epicor_address[0]->AddressId;
+        $epicor_contact['AddressId'] = $result['EPICOR_ADDRESS_ID'];
+
+        // Add contact to epicor
+        $search_url = 'api/entity/contacts/';
+        $contact_record = self::$connector->upload_record($search_url, $epicor_contact);
+
+        $search_url = 'api/entity/customers/';
+        $customer_info = epicor_data_converter::convert_customer_to_epicor_customer($cms_customer, $contact_record[0]->Id, $epicor_address[0]->AddressId);
+        $customer_record = self::$connector->upload_record($search_url, $customer_info);
+
+        $result["ID"] = $cms_customer["ID"];
+        $result['EPICOR_CONTACT_ID'] = $contact_record[0]->Id;
+        $result['EPICOR_CUSTOMER_ID'] = $customer_record[0]->CustomerId;
+        return $result;
+    }
+    
     /** Get address information by an identifier
      * @param string $address_id Epicor address unique identifier
      * @return object Address information

@@ -17,7 +17,7 @@ class epicor_data_converter
     public static function convert_order_to_epicor($cms_order_info, $cms_account_info)
     {
         $epicor_result = [];
-        if (!is_null_or_empty_string($cms_order_info["EPICOR_ID"])) {
+        if (!self::is_null_or_empty_string($cms_order_info["EPICOR_ID"])) {
             $epicor_result["OrderNo"] = $cms_order_info["EPICOR_ID"];
         }
 
@@ -82,16 +82,16 @@ class epicor_data_converter
     {
         $cms_result = [];
         $cms_result["EPICOR_ID"] = -1;
-        if (!is_null_or_empty_string(@$epicor_product_info->inv_mast_uid)) {
+        if (!self::is_null_or_empty_string(@$epicor_product_info->inv_mast_uid)) {
             $cms_result["EPICOR_ID"] = $epicor_product_info->inv_mast_uid;
-        } elseif (!is_null_or_empty_string(@$epicor_product_info->InvMastUid)) {
+        } elseif (!self::is_null_or_empty_string(@$epicor_product_info->InvMastUid)) {
             $cms_result["EPICOR_ID"] = $epicor_product_info->InvMastUid;
         }
 
         $cms_result["EPICOR_SKU"] = '';
-        if (!is_null_or_empty_string(@$epicor_product_info->item_id)) {
+        if (!self::is_null_or_empty_string(@$epicor_product_info->item_id)) {
             $cms_result["EPICOR_SKU"] = $epicor_product_info->item_id;
-        } elseif (!is_null_or_empty_string(@$epicor_product_info->ItemId)) {
+        } elseif (!self::is_null_or_empty_string(@$epicor_product_info->ItemId)) {
             $cms_result["EPICOR_SKU"] = $epicor_product_info->ItemId;
         }
 
@@ -100,9 +100,9 @@ class epicor_data_converter
             $cms_result["PRICE"] = $epicor_product_info->Price1;
 
             $cms_result["NAME"] = 'N/A';
-            if (!is_null_or_empty_string(@$epicor_product_info->ItemDesc)) {
+            if (!self::is_null_or_empty_string(@$epicor_product_info->ItemDesc)) {
                 $cms_result["NAME"] = $epicor_product_info->ItemDesc;
-            } elseif (!is_null_or_empty_string(@$epicor_product_info->item_desc)) {
+            } elseif (!self::is_null_or_empty_string(@$epicor_product_info->item_desc)) {
                 $cms_result["NAME"] = $epicor_product_info->item_desc;
             }
 
@@ -128,7 +128,7 @@ class epicor_data_converter
             "Title" => $cms_customer_info["THE_TITLE"],
             "DirectPhone" => $cms_customer_info["PHONE"],
             "FaxExt" => $cms_customer_info["FAX"],
-            "Cellular" => is_null_or_empty_string($cms_customer_info["PHONE"]) ? $cms_customer_info["CELLPHONE"] : $cms_customer_info["PHONE"],
+            "Cellular" => self::is_null_or_empty_string($cms_customer_info["PHONE"]) ? $cms_customer_info["CELLPHONE"] : $cms_customer_info["PHONE"],
             "HomeAddress1" => $cms_customer_info["ADDR1"],
             "HomeAddress2" => $cms_customer_info["ADDR2"],
             "Url" => $cms_customer_info["URL"],
@@ -189,7 +189,7 @@ class epicor_data_converter
         $epicor_result["CustomerAddress"]["MailState"] = $cms_customer_info["STATE"];
         $epicor_result["CustomerAddress"]["MailPostalCode"] = $cms_customer_info["ZIPCODE"];
         $epicor_result["CustomerAddress"]["MailCountry"] = $cms_customer_info["COUNTRY"];
-        $epicor_result["CustomerAddress"]["CentralPhoneNumber"] = is_null_or_empty_string($cms_customer_info["PHONE"]) ? $cms_customer_info["CELLPHONE"] : $cms_customer_info["PHONE"];
+        $epicor_result["CustomerAddress"]["CentralPhoneNumber"] = self::is_null_or_empty_string($cms_customer_info["PHONE"]) ? $cms_customer_info["CELLPHONE"] : $cms_customer_info["PHONE"];
         $epicor_result["CustomerAddress"]["CentralFaxNumber"] = "";
         $epicor_result["CustomerAddress"]["Alternative1099Name"] = "";
         $epicor_result["CustomerAddress"]["PhysAddress1"] = $cms_customer_info["ADDR1"];
@@ -238,7 +238,7 @@ class epicor_data_converter
         $epicor_result["CustomerShipTos"]["list"][0]["ShipToAddress"]["MailState"] = $cms_customer_info["STATE"];
         $epicor_result["CustomerShipTos"]["list"][0]["ShipToAddress"]["MailPostalCode"] = $cms_customer_info["ZIPCODE"];
         $epicor_result["CustomerShipTos"]["list"][0]["ShipToAddress"]["MailCountry"] = $cms_customer_info["COUNTRY"];
-        $epicor_result["CustomerShipTos"]["list"][0]["ShipToAddress"]["CentralPhoneNumber"] = is_null_or_empty_string($cms_customer_info["PHONE"]) ? $cms_customer_info["CELLPHONE"] : $cms_customer_info["PHONE"];
+        $epicor_result["CustomerShipTos"]["list"][0]["ShipToAddress"]["CentralPhoneNumber"] = self::is_null_or_empty_string($cms_customer_info["PHONE"]) ? $cms_customer_info["CELLPHONE"] : $cms_customer_info["PHONE"];
         $epicor_result["CustomerShipTos"]["list"][0]["ShipToAddress"]["CentralFaxNumber"] = "";
         $epicor_result["CustomerShipTos"]["list"][0]["ShipToAddress"]["Alternative1099Name"] = "";
         $epicor_result["CustomerShipTos"]["list"][0]["ShipToAddress"]["PhysAddress1"] = $cms_customer_info["ADDR1"];
@@ -310,5 +310,13 @@ class epicor_data_converter
         }
 
         return $cms_result;
+    }
+
+    /** Check if string is null or empty
+     * @param $str string Input string
+     * @return bool Flag if string is null or empty
+     */
+    public static function is_null_or_empty_string($str){
+        return !isset($str) || trim($str) === '';
     }
 }

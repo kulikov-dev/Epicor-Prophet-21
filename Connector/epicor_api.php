@@ -16,18 +16,50 @@ class epicor_api
      */
     private static $connector;
 
+    /** Get all orders from Epicor
+     * @return Generator Contacts yield array
+     */
+    public static function get_all_orders()
+    {
+        self::check_connection();
+
+        $indexer = self::$connector->get_all_items('data/erp/views/v1/p21_view_inv_mast');
+        foreach ($indexer as $value) {
+            yield $value;
+        }
+    }
+
+    /** Get an Epicor order information with products by an identifier
+     * @param string $epicor_order_id Epicor order unique identifier
+     * @return object Epicor order information
+     */
+    public static function get_order_with_line_items($epicor_order_id)
+    {
+        if (epicor_data_converter::is_null_or_empty_string($epicor_order_id)) {
+            return null;
+        }
+
+        self::check_connection();
+        $order_record = self::$connector->find_table_records('api/sales/orders/' . $epicor_order_id . '?extendedproperties=*', null);
+        if (!empty($order_record)) {
+            return $order_record[0];
+        }
+
+        return null;
+    }
+
     /** Get an Epicor order information by an identifier
      * @param string $epicor_order_id Epicor order unique identifier
      * @return object Epicor order information
      */
     public static function get_order($epicor_order_id)
     {
-        if (is_null_or_empty_string($epicor_order_id)) {
+        if (epicor_data_converter::is_null_or_empty_string($epicor_order_id)) {
             return null;
         }
 
         self::check_connection();
-        $order_record = self::$connector->find_table_records('api/sales/orders/' . $epicor_order_id . '?extendedproperties=*', null);
+        $order_record = self::$connector->find_table_records('api/sales/orders/' . $epicor_order_id, null);
         if (!empty($order_record)) {
             return $order_record[0];
         }
@@ -78,6 +110,10 @@ class epicor_api
      */
     public static function get_link_by_contact($contact_id)
     {
+        if (epicor_data_converter::is_null_or_empty_string($contact_id)) {
+            return null;
+        }
+
         self::check_connection();
 
         $search_url = 'data/erp/views/v1/p21_view_contacts_x_links?$filter=' . rawurlencode('trim(id) eq \'' . $contact_id . '\'');
@@ -95,6 +131,10 @@ class epicor_api
      */
     public static function get_link_by_customer($customer_id)
     {
+        if (epicor_data_converter::is_null_or_empty_string($customer_id)) {
+            return null;
+        }
+
         self::check_connection();
 
         $search_url = 'data/erp/views/v1/p21_view_contacts_x_links?$filter=' . rawurlencode('trim(link_id) eq \'' . $customer_id . '\'');
@@ -162,6 +202,10 @@ class epicor_api
      */
     public static function get_address($address_id)
     {
+        if (epicor_data_converter::is_null_or_empty_string($address_id)) {
+            return null;
+        }
+
         self::check_connection();
 
         $address_record = self::$connector->find_table_records('api/entity/addresses/?$query=' . rawurlencode('id eq \'' . $address_id . '\''), null);
@@ -191,6 +235,10 @@ class epicor_api
      */
     public static function get_product($sku)
     {
+        if (epicor_data_converter::is_null_or_empty_string($sku)) {
+            return null;
+        }
+
         self::check_connection();
 
         $search_url = 'api/inventory/parts/' . strval($sku);
@@ -232,7 +280,11 @@ class epicor_api
      */
     private static function get_entity_by_email($email, $entity_type)
     {
-        self::initialize_epicor_connection();
+        if (epicor_data_converter::is_null_or_empty_string($email)) {
+            return null;
+        }
+
+        self::check_connection();
 
         $email = trim($email);
         $search_url = 'api/entity/' . $entity_type . '/?$query=' . rawurlencode('email_address eq \'' . $email . '\' or email_address eq \'' . strtolower($email) . '\'');

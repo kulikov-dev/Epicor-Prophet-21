@@ -16,6 +16,19 @@ class epicor_api
      */
     private static $connector;
 
+    /**
+     * Get all views
+     */
+    public static function get_all_views()
+    {
+        self::check_connection();
+
+        $indexer = self::$connector->get_all_items('data/erp/views/v1/');
+        foreach ($indexer as $value) {
+            yield $value;
+        }
+    }
+
     /** Get all orders from Epicor
      * @return Generator Contacts yield array
      */

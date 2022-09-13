@@ -1,6 +1,6 @@
 <?php
 
-namespace kulikov-dev\connectors\epicor;
+namespace kulikov_dev\connectors\epicor;
 
 use Exception;
 use Generator;

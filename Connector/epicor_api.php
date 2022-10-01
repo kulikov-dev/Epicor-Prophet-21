@@ -80,9 +80,9 @@ class epicor_api
         return null;
     }
 
-    /** Upload information about a product to Epicor
-     * @param array $epicor_order Product information in Epicor format
-     * @return object Created product information
+    /** Upload information about an order to Epicor
+     * @param array $epicor_order Order information in Epicor format
+     * @return object Created order information
      */
     public static function set_order($epicor_order)
     {

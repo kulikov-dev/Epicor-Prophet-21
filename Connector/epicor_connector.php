@@ -47,7 +47,7 @@ class epicor_connector
         $this->entry_point = "";
 
         if (empty($user_name) || empty($this->entry_point)) {
-            view('Initialize credentials and API entry point first.');
+            print('Initialize credentials and API entry point first.');
             return;
         }
 
@@ -73,7 +73,7 @@ class epicor_connector
 
             $this->basic_auth = $response->AccessToken;
         } catch (Exception $exception) {
-            view('Fatal Error during Epicor connection: ' . $exception->getMessage());
+            print('Fatal Error during Epicor connection: ' . $exception->getMessage());
         }
     }
 
@@ -85,7 +85,7 @@ class epicor_connector
     public function find_table_records($search_url, $query)
     {
         if (empty($this->basic_auth)) {
-            view('Open Epicor connection before trying to find records.');
+            print('Open Epicor connection before trying to find records.');
             return [];
         }
 
@@ -123,7 +123,7 @@ class epicor_connector
 
             return [$response];
         } catch (Exception $exception) {
-            view('Fatal Error during finding Epicor content: ' . $exception->getMessage());
+            print('Fatal Error during finding Epicor content: ' . $exception->getMessage());
         }
 
         return [];
@@ -137,7 +137,7 @@ class epicor_connector
     public function upload_record($search_url, $query)
     {
         if (empty($this->basic_auth)) {
-            view('Open Epicor connection before trying to find records.');
+            print('Open Epicor connection before trying to find records.');
             return [];
         }
 
@@ -168,7 +168,7 @@ class epicor_connector
 
             return [$response];
         } catch (Exception $exception) {
-            view('Fatal Error during uploading record to Epicor database: ' . $exception->getMessage());
+            print('Fatal Error during uploading record to Epicor database: ' . $exception->getMessage());
         }
 
         return [];
@@ -181,7 +181,7 @@ class epicor_connector
     public function get_rows_count($search_url)
     {
         if (empty($this->basic_auth)) {
-            view('Open Epicor connection before trying to find records.');
+            print('Open Epicor connection before trying to find records.');
             return 0;
         }
 
@@ -199,7 +199,7 @@ class epicor_connector
 
             return json_decode($respond_json);
         } catch (Exception $exception) {
-            view('Fatal Error during counting Epicor content: ' . $exception->getMessage());
+            print('Fatal Error during counting Epicor content: ' . $exception->getMessage());
         }
 
         return 0;
